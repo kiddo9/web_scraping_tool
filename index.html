@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>web scraper</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <h1 class="title">Web Scraping Tool</h1>
+    <form action="/scrape" method="POST">
+      <!-- Input for search query -->
+      <div class="input-group">
+        <label for="query">Search Query:</label><br />
+        <input
+          type="text"
+          id="query"
+          name="query"
+          placeholder="e.g. AI startups in Africa"
+        />
+      </div>
+      <br /><br />
+
+      <!-- Optional input for list of URLs -->
+      <div class="input-group">
+        <label for="urls">Or paste seed URLs (one per line):</label><br />
+        <textarea
+          id="urls"
+          name="urls"
+          placeholder="https://example.com&#10;https://another.com"
+        ></textarea>
+      </div>
+      <br /><br />
+
+      <!-- Submit button -->
+      <button type="submit" id="btn">Start Scraping</button>
+    </form>
+  </body>
+</html>
