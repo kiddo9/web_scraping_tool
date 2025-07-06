@@ -1,193 +1,105 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
+const universalScraperFunction = require("../utils/functions"); //import the scraping function
+const ErrorHandler = require("../utils/errorHandler"); //import the error handling utility function
+const fs = require("fs"); //import the file system module
+const path = require("path"); //import the path module
 
-async function universalScrape(url: string) {
-  const response = await axios.get(url, { timeout: 100000 });
-  const $ = cheerio.load(response.data);
-
-  const scrapedData: any[] = [];
-  const companyInfo = {
-    companyName: "",
-    emails: new Set<string>(),
-    phones: new Set<string>(),
-    socialMedia: new Set<string>(),
-    address: "",
-    location: "",
-    products: new Set<string>(),
-    services: new Set<string>(),
-    industry: "",
-    url: "",
-  };
-
-  const selectors = `
-      h1, h2, h3, h4, h5, h6, p, span, div, li, strong, b, i, em, a, label, 
-      button, input, textarea, img, table, tr, td, th, thead, tbody, tfoot, 
-      script, title, link, video, source, iframe, nav, footer, header, article, section, footer, main, aside, form
-    `;
-
-  $(selectors).each((index: number, element: any) => {
-    const $el = $(element);
-    const tag = element.tagName.toLowerCase();
-
-    let textContent = "";
-    if ($el.is("input, textarea")) {
-      textContent = ($el.val() as string)?.trim() || "";
-    } else {
-      textContent = $el.text().trim();
-    }
-
-    const attributes: Record<string, string> = {};
-    Object.entries(element.attribs || {}).forEach(([key, val]) => {
-      if (val) attributes[key] = val as string;
-    });
-
-    if (textContent || Object.keys(attributes).length > 0) {
-      scrapedData.push({
-        index,
-        tag,
-        text: textContent,
-        attributes,
-      });
-    }
-
-    // === Enhanced Insights === //
-
-    const lowerText = textContent.toLowerCase();
-
-    // Emails & Phones
-    const emailMatch = textContent.match(
-      /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
-    );
-    const phoneMatch = textContent.match(/(\+?\d[\d\s\-]{7,}\d)/g);
-    if (emailMatch) emailMatch.forEach((e) => companyInfo.emails.add(e));
-    if (phoneMatch) phoneMatch.forEach((p) => companyInfo.phones.add(p));
-
-    // Social Media
-    if (tag === "a" && attributes.href) {
-      const href = attributes.href;
-      if (/facebook|linkedin|twitter|instagram|youtube/i.test(href)) {
-        companyInfo.socialMedia.add(href);
-      }
-    }
-
-    if (tag === "title" || tag === "h1" || tag === "h2" || tag === "span") {
-      // If the title or h1 contains the company name, we can extract more info
-      const companyName = textContent.trim();
-      if (!companyInfo.companyName) companyInfo.companyName = companyName; // Assuming address might be in the title
-    }
-
-    // Address/Location
-    if (
-      lowerText.includes("address") ||
-      lowerText.includes("head office") ||
-      lowerText.includes("headquarters") ||
-      lowerText.includes("location") ||
-      lowerText.includes("contact address") ||
-      lowerText.includes("contact location") ||
-      lowerText.includes("contact details") ||
-      lowerText.includes("contact information")
-    ) {
-      if (!companyInfo.address) companyInfo.address = textContent;
-    }
-    if (
-      lowerText.includes("country") ||
-      lowerText.includes("city") ||
-      lowerText.includes("state") ||
-      lowerText.includes("region") ||
-      lowerText.includes("locate") ||
-      lowerText.includes("street")
-    ) {
-      if (!companyInfo.location) companyInfo.location = textContent;
-    }
-
-    // Industry
-    if (
-      lowerText.includes("fashion") ||
-      lowerText.includes("technology") ||
-      lowerText.includes("finance") ||
-      lowerText.includes("healthcare") ||
-      lowerText.includes("education") ||
-      lowerText.includes("automotive") ||
-      lowerText.includes("real estate") ||
-      lowerText.includes("hospitality") ||
-      lowerText.includes("retail") ||
-      lowerText.includes("manufacturing") ||
-      lowerText.includes("construction") ||
-      lowerText.includes("energy") ||
-      lowerText.includes("telecommunications") ||
-      lowerText.includes("media") ||
-      lowerText.includes("entertainment") ||
-      lowerText.includes("agriculture") ||
-      lowerText.includes("transportation") ||
-      lowerText.includes("logistics")
-    ) {
-      if (!companyInfo.industry) companyInfo.industry = textContent;
-    }
-
-    // Products/Services
-    if (lowerText.includes("product") || lowerText.includes("products")) {
-      companyInfo.products.add(textContent);
-    }
-    if (lowerText.includes("service") || lowerText.includes("services")) {
-      companyInfo.services.add(textContent);
-    }
-  });
-
-  const finalData = {
-    status: "success",
-    message: "Scraping complete",
-    data: scrapedData,
-    companyInfo: {
-      name: companyInfo.companyName || "Unknown Company",
-      emails: Array.from(companyInfo.emails),
-      phones: Array.from(companyInfo.phones),
-      socialMedia: Array.from(companyInfo.socialMedia),
-      address: companyInfo.address,
-      location: companyInfo.location,
-      industry: companyInfo.industry,
-      url: url,
-      products: Array.from(companyInfo.products),
-      services: Array.from(companyInfo.services),
-    },
-    total: scrapedData.length,
-  };
-
-  return finalData;
-}
-
+//create a scraper controller function
 exports.universalScraper = async (req: any, res: any) => {
-  const { url } = req.query;
+  const { url } = req.query; //get the url from the request query
+  const parsedUrl = Array.isArray(url)
+    ? res.json({ status: "error", message: "URL is required" })
+    : JSON.parse(url); // check if the url is an array or a string, if it is an array return an error message, if it is a string parse it
 
-  if (!url || typeof url !== "string") {
+  //check if the url is empty
+  if (parsedUrl.length === 0) {
     return res
       .status(400)
       .json({ status: "error", message: "URL is required" });
   }
 
+  // using the try catch block
   try {
-    const scrapedData = await universalScrape(url);
-    console.log(scrapedData);
+    const results = await Promise.all(
+      parsedUrl.map((u: string) => {
+        const scrapedData = universalScraperFunction(u);
+        return scrapedData;
+      })
+    ); // scrape all the urls in parallel
 
-    return res.json(scrapedData);
+    results.map((result: any, index: number) => {
+      console.log(
+        "All information: " +
+          results +
+          "Company information: " +
+          result.companyInfo +
+          " " +
+          index
+      );
+    });
+
+    //send response to there client
+    return res.json({
+      status: "success",
+      message: "Scraping complete",
+      res: results,
+    });
   } catch (error: any) {
-    console.error("Scraping Error:", error.message, error.code);
-    if (error.code === "ECONNABORTED") {
-      return res
-        .status(408)
-        .json({ status: "error", message: "Request timed out" });
-    }
+    console.error("Scraping Error:", error.message, error.code); // log the error message and code
+    return ErrorHandler(req, res, error); // handle errors using the error handler utility
+  }
+};
 
-    if (error.code === "ERR_BAD_REQUEST") {
-      return res.status(403).json({
+// save scraped data to a file controller
+exports.saveScrapedData = async (req: any, res: any) => {
+  const { data } = req.body; // get the data from the request body
+  console.log("Data to save:", data); // log the data to be saved
+
+  if (Array.isArray(data) && data.length === 0) {
+    return res.status(400).json({
+      status: "error",
+      message: "No data to save",
+    });
+  }
+
+  const filePath = path.join(__dirname, "../../storage.json");
+
+  let fileData: any[] = [];
+
+  data.forEach((info: any) => {
+    if (!info.companyInfo) {
+      return res.status(400).json({
         status: "error",
-        message: "Request failed with status code 403(unauthorized)",
+        message: "Invalid data format",
       });
     }
 
-    return res.status(500).json({
-      status: "error",
-      message: "Scraping failed",
-      error: error.message,
-    });
-  }
+    if (fs.existsSync(filePath)) {
+      try {
+        const fileExists = fs.readFileSync(filePath, "utf8");
+        const exist = JSON.parse(fileExists);
+        fileData = exist;
+      } catch (error) {
+        console.log("sth dey", error);
+      }
+    }
+
+    fileData.push(info.companyInfo);
+
+    try {
+      fs.writeFile(filePath, JSON.stringify(fileData, null, 2), (err: any) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("ok");
+        }
+      });
+      console.log("✅ Data successfully written to storage.json");
+      return res.status(200).json({
+        status: "success",
+        message: "Data successfully saved",
+      });
+    } catch (err: any) {
+      console.error("❌ Failed to write to storage.json:", err.message);
+    }
+  });
 };

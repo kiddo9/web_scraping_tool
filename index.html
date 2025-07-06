@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <h1 class="title">Web Scraping Tool</h1>
+    <div class="header">
+      <h1 class="title">Web Scraping Tool</h1>
+    </div>
+
     <div class="form">
       <div id="error" class="error"></div>
       <div id="success" class="success"></div>
@@ -24,7 +27,8 @@
 
       <!-- Optional input for list of URLs -->
       <div class="input-group">
-        <label for="urls">paste seed URLs (one per line):</label><br />
+        <!-- <label for="urls">paste seed URLs (one per line):</label><br /> -->
+        <label for="urls">Single url</label><br />
         <textarea
           id="urls"
           placeholder="https://example.com&#10;https://another.com"
@@ -36,17 +40,18 @@
       <button id="btn">Start Scraping Urls</button>
     </div>
 
-    <div class="output">
-      <h2>Results with Html tags</h2>
-      <div>
-        <div id="results"></div>
-      </div>
+    <!-- <div class="output">
+      <h2>Results with Html tags</h2> -->
+    <div>
+      <div id="results"></div>
     </div>
+    <!-- </div> -->
 
     <div class="output">
       <h2>Company information</h2>
       <br />
       <div id="data"></div>
+      <button class="btn" id="save">Save information</button>
     </div>
 
     <script src="index.js"></script>
