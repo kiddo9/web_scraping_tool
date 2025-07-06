@@ -128,7 +128,10 @@ function saveData() {
   saveButton.style.display = "none"; // Hide the save button after saving
   saveInfo = []; // Clear the saveInfo array after saving
   Data.innerHTML = ""; // Clear the displayed data
-  success.textContent = "data successfully saved"; // Show success message
+  setTimeout(() => {
+    success.textContent = "data successfully saved"; // Show success message
+  }, 2000);
+
   error.textContent = ""; // Clear any previous error messages
 }
 

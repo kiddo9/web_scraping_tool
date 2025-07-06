@@ -25,15 +25,13 @@ This is a **Web Scraping Tool** designed to extract structured data from website
 
 ## ✨ Features
 
-- ✅ Interactive UI to submit URLs or search queries.
+- ✅ Interactive UI to submit URLs.
 - ✅ Displays extracted data in a readable format.
 - ✅ Accepts:
 
-  - a **search query** (e.g., company name)
-  - a **single URL**
   - multiple **seed URLs**
 
-- ✅ Stores data in both **JSON** and **CSV** formats.
+- ✅ Stores data in both **JSON** formats.
 - ✅ Input validation to prevent invalid requests.
 - ✅ Robust error handling to manage failed requests or invalid pages.
 
@@ -60,8 +58,6 @@ This tool offers **three levels of data insight**:
 ### 🔸 Level 3: Comprehensive Insight
 
 - Tech stack used
-- Market positioning
-- Estimated company size
 
 > **Design Decision**: The levels were introduced to modularize data extraction—useful for scaling the scraper or applying resource-intensive extraction conditionally.
 
@@ -129,12 +125,30 @@ Use the **Live Server extension** in VSCode to open and run the `index.html` fil
 
 ---
 
+### ✅ Usage and Testing
+
+1. **Open the HTML file** in your browser  
+   _Tip: You can use the Live Server extension in VSCode for easier testing._
+
+2. In the **textarea**, enter a list of seed URLs  
+   _Each URL should be on a new line._
+
+3. Click the **"Start Scrape"** button to begin scraping.
+
+4. The **scraped results** will be displayed on the page once the process is complete.
+
+5. Click the **"Save"** button to store the extracted company data in the `storage.json` file.
+
+> 💾 All saved data is appended to `storage.json` and stored in structured JSON format.
+
+---
+
 ## 🧩 Assumptions & Design Decisions
 
 - **Modular Levels**: The three extraction levels allow customization and scaling—more advanced scrapes only run when needed.
 - **Cheerio** was chosen for its lightweight DOM traversal capabilities, suitable for static HTML scraping.
 - **No Headless Browser**: This scraper assumes **no JavaScript-rendered pages**. Future versions could integrate Puppeteer/Playwright for dynamic content.
-- **Flat Data Storage**: JSON and CSV formats are used for simple downstream integration with spreadsheets, data platforms, or analytics.
+- **Flat Data Storage**: The scraped data are stored in a JSON file.
 - **Frontend Simplicity**: A simple vanilla JS UI keeps dependencies low and enables quick testing.
 
 ---
