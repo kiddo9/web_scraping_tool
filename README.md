@@ -143,6 +143,73 @@ Use the **Live Server extension** in VSCode to open and run the `index.html` fil
 
 ---
 
+### JSON response generated
+
+```
+[
+  {
+    "name": "1% Studio",
+    "emails": [
+      "hello@1percnt.com"
+    ],
+    "phones": [],
+    "socialMedia": [
+      "https://www.instagram.com/1.percnt",
+      "https://youtube.com/@1percntstudio",
+      "https://www.instagram.com/wearthirsty",
+      "https://www.instagram.com/snowbunnyworld",
+      "https://www.instagram.com/davido",
+      "https://www.instagram.com/fwtriads",
+      "https://www.instagram.com/gocrazy.wby",
+      "https://www.instagram.com/streetsouk",
+      "https://www.instagram.com/straffitti"
+    ],
+    "location": "",
+    "industry": "media",
+    "describe": "1% Studio is a premier multimedia creative, consulting, and production company partnering with brands and artists to deliver exceptional content. Join our team as an intern video editor!",
+    "url": "https://www.1percnt.com/contact",
+    "products": [],
+    "techStack": [
+      "js"
+    ]
+  },
+  {
+    "name": "Jumia Nigeria",
+    "emails": [],
+    "phones": [
+      "702890399",
+      "718362032",
+      "0700-600-0000",
+      "02018883300",
+      "1160 20000",
+      "148127000",
+      "02018881106",
+      "01 8881100",
+      "489867790496"
+    ],
+    "socialMedia": [
+      "/mi-netflix-prime-video-youtube-installed-mxq-pro-smart-box-with-mi-32-led-tv-393712107.html",
+      "https://www.facebook.com/jumia.com.ng/",
+      "https://www.youtube.com/c/JumiaNigeriaNG",
+      "https://www.instagram.com/jumianigeria/",
+      "https://twitter.com/JumiaNGHelp"
+    ],
+    "location": "",
+    "industry": "online shopping",
+    "describe": "Jumia Nigeria the #1 of Online Shopping in Nigeria - Shop Online All Products : Smartphones, Appliances, Clothing... ✓ Top Brands :  Samsung, Xiaomi, Adidas... ✓ Best prices in Nigeria ✓ Order now and enjoy pay on delivery !",
+    "url": "https://www.jumia.com/",
+    "products": [
+      "Service Center",
+      "How to return a product on Jumia?",
+      "Report a Product"
+    ],
+    "techStack": [
+      "js"
+    ]
+  }
+]
+```
+
 ## 🧩 Assumptions & Design Decisions
 
 - **Modular Levels**: The three extraction levels allow customization and scaling—more advanced scrapes only run when needed.
