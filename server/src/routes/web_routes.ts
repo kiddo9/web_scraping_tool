@@ -11,6 +11,28 @@ routers.get("/", (req: any, res: any) => {
   });
 });
 
+routers.get(`/proxy-pdf-file-for-ipad`, async (req: any, res: any) => {
+  const { url } = req.query;
+  try {
+    if (!url) {
+      throw new Error("invalid or missing query");
+    }
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch file infomation");
+    }
+
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Content-Type", "application/pdf");
+
+    const fileBuffer = await response.arrayBuffer();
+    res.send(Buffer.from(fileBuffer));
+  } catch (error) {
+    res.status(500).send("Error fetching pdf");
+  }
+});
+
 // Define the route for the universal scraper
 routers.post("/scraper", scraperController.universalScraper);
 routers.post("/save", scraperController.saveScrapedData);
